@@ -7,10 +7,10 @@ const saveButton = document.getElementById('save');
 
 saveButton.addEventListener('click', save, true);
 
-let database = null;
+var DATABASE = null;
 
-const databaseName = 'memo';
-const storeName = 'memoes';
+const DATABASE_NAME = 'memo';
+const STORE_NAME = 'memoes';
 
 window.onload = () => {
   if (!window.indexedDB) {
@@ -18,19 +18,19 @@ window.onload = () => {
     return;
   }
 
-  const openRequest = indexedDB.open(databaseName, 1);
+  const openRequest = indexedDB.open(DATABASE_NAME, 1);
 
   openRequest.onupgradeneeded = event => {
-    database = event.target.result;
-    database.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+    DATABASE = event.target.result;
+    DATABASE.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
   }
 
   openRequest.onsuccess = event => {
-    database = event.target.result;
+    DATABASE = event.target.result;
     console.info('データベースへの接続に成功しました');
 
-    const transaction = database.transaction(storeName, 'readonly');
-    const objectStore = transaction.objectStore(storeName);
+    const transaction = DATABASE.transaction(STORE_NAME, 'readonly');
+    const objectStore = transaction.objectStore(STORE_NAME);
 
     const cursorRequest = objectStore.openCursor(null, 'next');
     cursorRequest.onsuccess = e => {
@@ -67,8 +67,8 @@ function save() {
   title.value = null;
   body.value = null;
 
-  const transaction = database.transaction(storeName, 'readwrite');
-  const objectStore = transaction.objectStore(storeName);
+  const transaction = DATABASE.transaction(STORE_NAME, 'readwrite');
+  const objectStore = transaction.objectStore(STORE_NAME);
 
   let id = null;
 
@@ -88,8 +88,8 @@ function save() {
  * @param {string | number} id keyPath
  */
 function del(id) {
-  const transaction = database.transaction(storeName, 'readwrite');
-  const objectStore = transaction.objectStore(storeName);
+  const transaction = DATABASE.transaction(STORE_NAME, 'readwrite');
+  const objectStore = transaction.objectStore(STORE_NAME);
   const deleteRequest = objectStore.delete(id);
 
   deleteRequest.onsuccess = event => {
@@ -107,8 +107,8 @@ function del(id) {
  * @param {string | number} id keyPath
  */
 function output(id) {
-  const transaction = database.transaction(storeName, 'readonly');
-  const objectStore = transaction.objectStore(storeName);
+  const transaction = DATABASE.transaction(STORE_NAME, 'readonly');
+  const objectStore = transaction.objectStore(STORE_NAME);
   const getRequest = objectStore.get(id);
 
   getRequest.onsuccess = event => {
